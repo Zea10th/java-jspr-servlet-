@@ -1,8 +1,10 @@
 package org.example.servlet;
 
+import org.example.config.MainServletConfig;
 import org.example.controller.PostController;
 import org.example.repository.PostRepository;
 import org.example.service.PostService;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,12 +19,15 @@ public class MainServlet extends HttpServlet {
     private static final String APP_CONTEXT = "/";
 
     private PostController controller;
+    private PostRepository repository;
+    private PostService service;
 
     @Override
     public void init() {
-        final var repository = new PostRepository();
-        final var service = new PostService(repository);
-        controller = new PostController(service);
+        final var context = new AnnotationConfigApplicationContext(MainServletConfig.class);
+        repository = context.getBean(PostRepository.class);
+        service = context.getBean(PostService.class);
+        controller = context.getBean(PostController.class);
     }
 
     @Override
@@ -31,7 +36,6 @@ public class MainServlet extends HttpServlet {
         try {
             final var path = req.getRequestURI();
             final var method = req.getMethod();
-//            final var id = Long.parseLong(path.substring(path.lastIndexOf(APP_CONTEXT)));
 
             // primitive routing
             if (method.equals(METHOD_GET) && path.equals(API_POSTS)) {
