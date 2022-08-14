@@ -1,10 +1,12 @@
 package org.example.repository;
 
 import org.example.model.Post;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Repository
 public class PostRepository {
     private Map<Long, Post> repository;
 
