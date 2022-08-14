@@ -3,6 +3,7 @@ package org.example.servlet;
 import org.example.controller.PostController;
 import org.example.repository.PostRepository;
 import org.example.service.PostService;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,23 +16,27 @@ public class MainServlet extends HttpServlet {
     private static final String API_POSTS = "/api/posts";
     private static final String API_POSTS_D = API_POSTS.concat("\\d+");
     private static final String APP_CONTEXT = "/";
-
+    private AnnotationConfigApplicationContext context;
     private PostController controller;
+    private PostService service;
+    private PostRepository repository;
 
     @Override
     public void init() {
-        final var repository = new PostRepository();
-        final var service = new PostService(repository);
-        controller = new PostController(service);
+        context = new AnnotationConfigApplicationContext("org.example");
+        controller = (PostController) context.getBean("postController");
+        service = (PostService) context.getBean("postService");
+        repository = (PostRepository) context.getBean("postRepository");
+
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) {
+
         // если деплоились в root context, то достаточно этого
         try {
             final var path = req.getRequestURI();
             final var method = req.getMethod();
-//            final var id = Long.parseLong(path.substring(path.lastIndexOf(APP_CONTEXT)));
 
             // primitive routing
             if (method.equals(METHOD_GET) && path.equals(API_POSTS)) {
